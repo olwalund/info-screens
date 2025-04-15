@@ -1,20 +1,37 @@
 <!DOCTYPE html>
 <html lang="sv">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Infoskärm</title>
-    <style>
-        body { margin: 0; overflow: hidden; }
-        iframe { width: 100vw; height: 100vh; border: none; }
-    </style>
-    <script>
-        setTimeout(function(){
-            location.reload();
-        }, 300000); // Laddar om sidan var 5:e minut (300 000 ms)
-    </script>
+  <meta charset="UTF-8">
+  <title>Infoskärm</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      height: 100%;
+    }
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+  </style>
+  <script>
+    function loadPresentation() {
+      const iframe = document.getElementById("slides");
+      const baseUrl = "https://docs.google.com/presentation/d/e/2PACX-1vRYVC9qHgseTVc7UEVZ7IX7tWO52iU7rLZhlQlRUjwWglb5nkGfwp_gka96SwJvJ0v5ZJEkl9lLFnZv/embed";
+      const params = "?start=true&loop=true&delayms=2000&rm=minimal&t=" + new Date().getTime();
+      iframe.src = baseUrl + params;
+    }
+
+    // Ladda första gången
+    window.onload = loadPresentation;
+
+    // Ladda om var 20:e sekund (testläge)
+    setInterval(loadPresentation, 20000);
+  </script>
 </head>
 <body>
-    <iframe src="https://docs.google.com/presentation/d/e/2PACX-1vRYVC9qHgseTVc7UEVZ7IX7tWO52iU7rLZhlQlRUjwWglb5nkGfwp_gka96SwJvJ0v5ZJEkl9lLFnZv/pub?start=false&loop=false&delayms=3000"></iframe>
+  <iframe id="slides" allowfullscreen></iframe>
 </body>
 </html>
