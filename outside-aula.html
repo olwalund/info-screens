@@ -52,7 +52,7 @@
   <div id="container">
     <iframe
       id="presentation"
-      src="https://docs.google.com/presentation/d/e/2PACX-1vRYVC9qHgseTVc7UEVZ7IX7tWO52iU7rLZhlQlRUjwWglb5nkGfwp_gka96SwJvJ0v5ZJEkl9lLFnZv/embed?start=true&loop=true&delayms=2000&rm=minimal"
+      src="https://docs.google.com/presentation/d/e/2PACX-1vQwjH1aa643VnWNFaLkaOMQ_dgP2WpR4UvLJkZa3wIlueIrtIaOSXqd5Nj49o4r2uSmMWxkpH7EhJvd/embed?start=true&loop=true&delayms=30000&rm=minimal"
       allowfullscreen
     ></iframe>
     <div id="clock">00:00</div>
@@ -119,8 +119,8 @@
     positionClock();
     window.addEventListener("resize", positionClock);
 
-    // Ladda om presentationen efter 20 sekunder
-    setInterval(loadPresentation, 20000);
+    // Ladda om presentationen efter 3600 sekunder (1 timme)
+    setInterval(loadPresentation, 3600000);
   </script>
 </body>
 </html>
