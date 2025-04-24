@@ -1,37 +1,126 @@
 <!DOCTYPE html>
 <html lang="sv">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Infoskärm</title>
+  <link href="https://fonts.googleapis.com/css2?family=Comfortaa&display=swap" rel="stylesheet" />
   <style>
     html, body {
       margin: 0;
       padding: 0;
-      overflow: hidden;
+      background-color: black;
       height: 100%;
+      overflow: hidden;
+      font-family: 'Comfortaa', sans-serif;
     }
-    iframe {
+
+    #container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    #presentation {
       width: 100%;
       height: 100%;
       border: none;
     }
-  </style>
-  <script>
-    function loadPresentation() {
-      const iframe = document.getElementById("slides");
-      const baseUrl = "https://docs.google.com/presentation/d/e/2PACX-1vRYVC9qHgseTVc7UEVZ7IX7tWO52iU7rLZhlQlRUjwWglb5nkGfwp_gka96SwJvJ0v5ZJEkl9lLFnZv/embed";
-      const params = "?start=true&loop=true&delayms=2000&rm=minimal&t=" + new Date().getTime();
-      iframe.src = baseUrl + params;
+
+    #clock {
+      position: absolute;
+      color: black;
+      background: transparent;
+      white-space: nowrap;
     }
 
-    // Ladda första gången
-    window.onload = loadPresentation;
-
-    // Ladda om var 20:e sekund (testläge)
-    setInterval(loadPresentation, 20000);
-  </script>
+    #debug {
+      display: none; /* Dölj rutan, kan aktiveras vid behov */
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: limegreen;
+      font-family: monospace;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 0.5em;
+      border-radius: 5px;
+    }
+  </style>
 </head>
 <body>
-  <iframe id="slides" allowfullscreen></iframe>
+  <div id="container">
+    <iframe
+      id="presentation"
+      src="https://docs.google.com/presentation/d/e/2PACX-1vRYVC9qHgseTVc7UEVZ7IX7tWO52iU7rLZhlQlRUjwWglb5nkGfwp_gka96SwJvJ0v5ZJEkl9lLFnZv/embed?start=true&loop=true&delayms=2000&rm=minimal"
+      allowfullscreen
+    ></iframe>
+    <div id="clock">00:00</div>
+    <div id="debug"></div>
+  </div>
+
+  <script>
+    const aspectRatio = 16 / 9;
+    const clock = document.getElementById("clock");
+    const debug = document.getElementById("debug");
+
+    function updateClock() {
+      const now = new Date();
+      const hours = now.getHours().toString().padStart(2, "0");
+      const minutes = now.getMinutes().toString().padStart(2, "0");
+      clock.textContent = `${hours}:${minutes}`;
+    }
+
+    function positionClock() {
+      const container = document.getElementById("container");
+      const cw = container.clientWidth;
+      const ch = container.clientHeight;
+
+      let presWidth, presHeight, xOffset, yOffset;
+
+      if (cw / ch > aspectRatio) {
+        // Höjden är maxad
+        presHeight = ch;
+        presWidth = ch * aspectRatio;
+        xOffset = (cw - presWidth) / 2;
+        yOffset = 0;
+        // debug.textContent = "Höjden är maxad";
+      } else {
+        // Bredden är maxad
+        presWidth = cw;
+        presHeight = cw / aspectRatio;
+        xOffset = 0;
+        yOffset = (ch - presHeight) / 2;
+        // debug.textContent = "Bredden är maxad";
+      }
+
+      const padding = presHeight * 0.05;
+      const fontSize = presHeight * 0.06;
+      clock.style.fontSize = `${fontSize}px`;
+
+      const clockWidth = clock.offsetWidth;
+      const left = xOffset + presWidth - clockWidth - padding;
+      const top = yOffset + padding;
+
+      clock.style.left = `${left}px`;
+      clock.style.top = `${top}px`;
+      clock.style.transform = "translateX(0)";
+    }
+
+    function loadPresentation() {
+      const iframe = document.getElementById("presentation");
+      const src = iframe.src.split("?")[0];
+      iframe.src = `${src}?start=true&loop=true&delayms=2000&rm=minimal&cachebust=${Date.now()}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    positionClock();
+    window.addEventListener("resize", positionClock);
+
+    // Ladda om presentationen efter 20 sekunder
+    setInterval(loadPresentation, 20000);
+  </script>
 </body>
 </html>
