@@ -110,7 +110,7 @@
     function loadPresentation() {
       const iframe = document.getElementById("presentation");
       const src = iframe.src.split("?")[0];
-      iframe.src = `${src}?start=true&loop=true&delayms=2000&rm=minimal&cachebust=${Date.now()}`;
+      iframe.src = `${src}?start=true&loop=true&delayms=30000&rm=minimal&cachebust=${Date.now()}`;
     }
 
     updateClock();
