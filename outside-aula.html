@@ -52,7 +52,6 @@
   <div id="container">
     <iframe
       id="presentation"
-      src="https://docs.google.com/presentation/d/e/2PACX-1vQwjH1aa643VnWNFaLkaOMQ_dgP2WpR4UvLJkZa3wIlueIrtIaOSXqd5Nj49o4r2uSmMWxkpH7EhJvd/embed?start=true&loop=true&delayms=30000&rm=minimal"
       allowfullscreen
     ></iframe>
     <div id="clock">00:00</div>
@@ -60,10 +59,18 @@
   </div>
 
   <script>
+    // === KONFIGURATION ===
+    const slideLengthInSeconds = 30;       // Hur länge varje slide visas
+    const updateFrequencyInMinutes = 60;   // Hur ofta presentationen laddas om
+    const presentationBaseUrl = "https://docs.google.com/presentation/d/e/2PACX-1vQwjH1aa643VnWNFaLkaOMQ_dgP2WpR4UvLJkZa3wIlueIrtIaOSXqd5Nj49o4r2uSmMWxkpH7EhJvd/embed";
+
+    // === ELEMENTREFERENSER ===
     const aspectRatio = 16 / 9;
     const clock = document.getElementById("clock");
     const debug = document.getElementById("debug");
+    const presentation = document.getElementById("presentation");
 
+    // === FUNKTIONER ===
     function updateClock() {
       const now = new Date();
       const hours = now.getHours().toString().padStart(2, "0");
@@ -79,14 +86,12 @@
       let presWidth, presHeight, xOffset, yOffset;
 
       if (cw / ch > aspectRatio) {
-        // Höjden är maxad
         presHeight = ch;
         presWidth = ch * aspectRatio;
         xOffset = (cw - presWidth) / 2;
         yOffset = 0;
         // debug.textContent = "Höjden är maxad";
       } else {
-        // Bredden är maxad
         presWidth = cw;
         presHeight = cw / aspectRatio;
         xOffset = 0;
@@ -108,19 +113,20 @@
     }
 
     function loadPresentation() {
-      const iframe = document.getElementById("presentation");
-      const src = iframe.src.split("?")[0];
-      iframe.src = `${src}?start=true&loop=true&delayms=30000&rm=minimal&cachebust=${Date.now()}`;
+      const delayMs = slideLengthInSeconds * 1000;
+      const cacheBuster = `cachebust=${Date.now()}`;
+      presentation.src = `${presentationBaseUrl}?start=true&loop=true&delayms=${delayMs}&rm=minimal&${cacheBuster}`;
     }
 
+    // === INITIERING ===
     updateClock();
     setInterval(updateClock, 1000);
 
     positionClock();
     window.addEventListener("resize", positionClock);
 
-    // Ladda om presentationen efter 3600 sekunder (1 timme)
-    setInterval(loadPresentation, 3600000);
+    loadPresentation();
+    setInterval(loadPresentation, updateFrequencyInMinutes * 60000);
   </script>
 </body>
 </html>
