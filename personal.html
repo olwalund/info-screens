@@ -32,9 +32,10 @@
       bottom: 2%;
       width: 100%;
       text-align: center;
-      font-size: 2.2vw; /* Mindre typsnitt än tidigare */
+      font-size: 2.2vw;
       background: transparent;
       white-space: nowrap;
+      color: white;
     }
 
     #debug {
@@ -54,7 +55,7 @@
 <body>
   <div id="container">
     <iframe id="presentation" allowfullscreen></iframe>
-    <div id="clock">Vecka 20 · onsdag 14 maj · 12:40</div>
+    <div id="clock">onsdag 14 maj 12:40</div>
     <div id="debug"></div>
   </div>
 
@@ -69,17 +70,7 @@
     const months = ["januari", "februari", "mars", "april", "maj", "juni", "juli", "augusti", "september", "oktober", "november", "december"];
 
     const clock = document.getElementById("clock");
-    const debug = document.getElementById("debug");
     const presentation = document.getElementById("presentation");
-
-    function getWeekNumber(date) {
-      const target = new Date(date.valueOf());
-      const dayNr = (date.getDay() + 6) % 7;
-      target.setDate(target.getDate() - dayNr + 3);
-      const firstThursday = new Date(target.getFullYear(), 0, 4);
-      const diff = target - firstThursday;
-      return 1 + Math.round(diff / (7 * 24 * 60 * 60 * 1000));
-    }
 
     function updateClock() {
       const now = new Date();
@@ -88,9 +79,8 @@
       const month = months[now.getMonth()];
       const hours = now.getHours().toString().padStart(2, "0");
       const minutes = now.getMinutes().toString().padStart(2, "0");
-      const week = getWeekNumber(now);
 
-      clock.textContent = `Vecka ${week} · ${weekday} ${day} ${month} · ${hours}:${minutes}`;
+      clock.textContent = `${weekday} ${day} ${month} ${hours}:${minutes}`;
       clock.style.color = clockColor;
     }
 
@@ -102,7 +92,7 @@
 
     // === INITIERING ===
     updateClock();
-    setInterval(updateClock, 1000); // Uppdatera varje sekund
+    setInterval(updateClock, 1000);
     loadPresentation();
     setInterval(loadPresentation, updateFrequencyInMinutes * 60000);
   </script>
