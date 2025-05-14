@@ -29,12 +29,16 @@
 
     #clock {
       position: absolute;
+      bottom: 2%;
+      width: 100%;
+      text-align: center;
+      font-size: 2.2vw; /* Mindre typsnitt än tidigare */
       background: transparent;
       white-space: nowrap;
     }
 
     #debug {
-      display: none; /* Dölj rutan, kan aktiveras vid behov */
+      display: none;
       position: absolute;
       top: 50%;
       left: 50%;
@@ -50,62 +54,44 @@
 <body>
   <div id="container">
     <iframe id="presentation" allowfullscreen></iframe>
-    <div id="clock">00:00</div>
+    <div id="clock">Vecka 20 · onsdag 14 maj · 12:40</div>
     <div id="debug"></div>
   </div>
 
   <script>
     // === KONFIGURATION ===
-    const slideLengthInSeconds = 15;       // Hur länge varje slide visas
-    const updateFrequencyInMinutes = 5;   // Hur ofta presentationen laddas om
-    const clockColor = "#FFFFFF";          // Färg på klocktexten (t.ex. "#ffffff" eller "white")
+    const slideLengthInSeconds = 15;
+    const updateFrequencyInMinutes = 5;
+    const clockColor = "#FFFFFF";
     const presentationBaseUrl = "https://docs.google.com/presentation/d/e/2PACX-1vRFgGutKn-SQkHaE1TQIHDXpuMZlglPBrEb0_Sns7orp0AmAQpc2L9oOMpEMkHt4b1Z1N3vkOjHB-67/embed";
 
-    // === ELEMENTREFERENSER ===
-    const aspectRatio = 16 / 9;
+    const weekdays = ["söndag", "måndag", "tisdag", "onsdag", "torsdag", "fredag", "lördag"];
+    const months = ["januari", "februari", "mars", "april", "maj", "juni", "juli", "augusti", "september", "oktober", "november", "december"];
+
     const clock = document.getElementById("clock");
     const debug = document.getElementById("debug");
     const presentation = document.getElementById("presentation");
 
-    // === FUNKTIONER ===
-    function updateClock() {
-      const now = new Date();
-      const hours = now.getHours().toString().padStart(2, "0");
-      const minutes = now.getMinutes().toString().padStart(2, "0");
-      clock.textContent = `${hours}:${minutes}`;
+    function getWeekNumber(date) {
+      const target = new Date(date.valueOf());
+      const dayNr = (date.getDay() + 6) % 7;
+      target.setDate(target.getDate() - dayNr + 3);
+      const firstThursday = new Date(target.getFullYear(), 0, 4);
+      const diff = target - firstThursday;
+      return 1 + Math.round(diff / (7 * 24 * 60 * 60 * 1000));
     }
 
-    function positionClock() {
-      const container = document.getElementById("container");
-      const cw = container.clientWidth;
-      const ch = container.clientHeight;
+    function updateClock() {
+      const now = new Date();
+      const weekday = weekdays[now.getDay()];
+      const day = now.getDate();
+      const month = months[now.getMonth()];
+      const hours = now.getHours().toString().padStart(2, "0");
+      const minutes = now.getMinutes().toString().padStart(2, "0");
+      const week = getWeekNumber(now);
 
-      let presWidth, presHeight, xOffset, yOffset;
-
-      if (cw / ch > aspectRatio) {
-        presHeight = ch;
-        presWidth = ch * aspectRatio;
-        xOffset = (cw - presWidth) / 2;
-        yOffset = 0;
-      } else {
-        presWidth = cw;
-        presHeight = cw / aspectRatio;
-        xOffset = 0;
-        yOffset = (ch - presHeight) / 2;
-      }
-
-      const padding = presHeight * 0.05;
-      const fontSize = presHeight * 0.06;
-      clock.style.fontSize = `${fontSize}px`;
+      clock.textContent = `Vecka ${week} · ${weekday} ${day} ${month} · ${hours}:${minutes}`;
       clock.style.color = clockColor;
-
-      const clockWidth = clock.offsetWidth;
-      const left = xOffset + presWidth - clockWidth - padding;
-      const top = yOffset + padding;
-
-      clock.style.left = `${left}px`;
-      clock.style.top = `${top}px`;
-      clock.style.transform = "translateX(0)";
     }
 
     function loadPresentation() {
@@ -116,11 +102,7 @@
 
     // === INITIERING ===
     updateClock();
-    setInterval(updateClock, 1000);
-
-    positionClock();
-    window.addEventListener("resize", positionClock);
-
+    setInterval(updateClock, 1000); // Uppdatera varje sekund
     loadPresentation();
     setInterval(loadPresentation, updateFrequencyInMinutes * 60000);
   </script>
