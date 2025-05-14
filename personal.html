@@ -29,7 +29,6 @@
 
     #clock {
       position: absolute;
-      color: black;
       background: transparent;
       white-space: nowrap;
     }
@@ -50,10 +49,7 @@
 </head>
 <body>
   <div id="container">
-    <iframe
-      id="presentation"
-      allowfullscreen
-    ></iframe>
+    <iframe id="presentation" allowfullscreen></iframe>
     <div id="clock">00:00</div>
     <div id="debug"></div>
   </div>
@@ -62,6 +58,7 @@
     // === KONFIGURATION ===
     const slideLengthInSeconds = 15;       // Hur länge varje slide visas
     const updateFrequencyInMinutes = 5;   // Hur ofta presentationen laddas om
+    const clockColor = "#FFFFFF";          // Färg på klocktexten (t.ex. "#ffffff" eller "white")
     const presentationBaseUrl = "https://docs.google.com/presentation/d/e/2PACX-1vRFgGutKn-SQkHaE1TQIHDXpuMZlglPBrEb0_Sns7orp0AmAQpc2L9oOMpEMkHt4b1Z1N3vkOjHB-67/embed";
 
     // === ELEMENTREFERENSER ===
@@ -90,18 +87,17 @@
         presWidth = ch * aspectRatio;
         xOffset = (cw - presWidth) / 2;
         yOffset = 0;
-        // debug.textContent = "Höjden är maxad";
       } else {
         presWidth = cw;
         presHeight = cw / aspectRatio;
         xOffset = 0;
         yOffset = (ch - presHeight) / 2;
-        // debug.textContent = "Bredden är maxad";
       }
 
       const padding = presHeight * 0.05;
       const fontSize = presHeight * 0.06;
       clock.style.fontSize = `${fontSize}px`;
+      clock.style.color = clockColor;
 
       const clockWidth = clock.offsetWidth;
       const left = xOffset + presWidth - clockWidth - padding;
