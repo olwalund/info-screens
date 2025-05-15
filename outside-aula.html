@@ -29,13 +29,17 @@
 
     #clock {
       position: absolute;
-      color: black;
+      bottom: 2%;
+      width: 100%;
+      text-align: center;
+      font-size: 2.2vw;
       background: transparent;
       white-space: nowrap;
+      color: white;
     }
 
     #debug {
-      display: none; /* Dölj rutan, kan aktiveras vid behov */
+      display: none;
       position: absolute;
       top: 50%;
       left: 50%;
@@ -50,66 +54,34 @@
 </head>
 <body>
   <div id="container">
-    <iframe
-      id="presentation"
-      allowfullscreen
-    ></iframe>
-    <div id="clock">00:00</div>
+    <iframe id="presentation" allowfullscreen></iframe>
+    <div id="clock">onsdag 14 maj 12:40</div>
     <div id="debug"></div>
   </div>
 
   <script>
     // === KONFIGURATION ===
-    const slideLengthInSeconds = 30;       // Hur länge varje slide visas
-    const updateFrequencyInMinutes = 60;   // Hur ofta presentationen laddas om
+    const slideLengthInSeconds = 30;
+    const updateFrequencyInMinutes = 60;
+    const clockColor = "#000000";
     const presentationBaseUrl = "https://docs.google.com/presentation/d/e/2PACX-1vQwjH1aa643VnWNFaLkaOMQ_dgP2WpR4UvLJkZa3wIlueIrtIaOSXqd5Nj49o4r2uSmMWxkpH7EhJvd/embed";
 
-    // === ELEMENTREFERENSER ===
-    const aspectRatio = 16 / 9;
+    const weekdays = ["söndag", "måndag", "tisdag", "onsdag", "torsdag", "fredag", "lördag"];
+    const months = ["januari", "februari", "mars", "april", "maj", "juni", "juli", "augusti", "september", "oktober", "november", "december"];
+
     const clock = document.getElementById("clock");
-    const debug = document.getElementById("debug");
     const presentation = document.getElementById("presentation");
 
-    // === FUNKTIONER ===
     function updateClock() {
       const now = new Date();
+      const weekday = weekdays[now.getDay()];
+      const day = now.getDate();
+      const month = months[now.getMonth()];
       const hours = now.getHours().toString().padStart(2, "0");
       const minutes = now.getMinutes().toString().padStart(2, "0");
-      clock.textContent = `${hours}:${minutes}`;
-    }
 
-    function positionClock() {
-      const container = document.getElementById("container");
-      const cw = container.clientWidth;
-      const ch = container.clientHeight;
-
-      let presWidth, presHeight, xOffset, yOffset;
-
-      if (cw / ch > aspectRatio) {
-        presHeight = ch;
-        presWidth = ch * aspectRatio;
-        xOffset = (cw - presWidth) / 2;
-        yOffset = 0;
-        // debug.textContent = "Höjden är maxad";
-      } else {
-        presWidth = cw;
-        presHeight = cw / aspectRatio;
-        xOffset = 0;
-        yOffset = (ch - presHeight) / 2;
-        // debug.textContent = "Bredden är maxad";
-      }
-
-      const padding = presHeight * 0.05;
-      const fontSize = presHeight * 0.06;
-      clock.style.fontSize = `${fontSize}px`;
-
-      const clockWidth = clock.offsetWidth;
-      const left = xOffset + presWidth - clockWidth - padding;
-      const top = yOffset + padding;
-
-      clock.style.left = `${left}px`;
-      clock.style.top = `${top}px`;
-      clock.style.transform = "translateX(0)";
+      clock.textContent = `${weekday} ${day} ${month} ${hours}:${minutes}`;
+      clock.style.color = clockColor;
     }
 
     function loadPresentation() {
@@ -121,10 +93,6 @@
     // === INITIERING ===
     updateClock();
     setInterval(updateClock, 1000);
-
-    positionClock();
-    window.addEventListener("resize", positionClock);
-
     loadPresentation();
     setInterval(loadPresentation, updateFrequencyInMinutes * 60000);
   </script>
