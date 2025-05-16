@@ -63,9 +63,12 @@
     const slideLengthInSeconds = 30;
     const updateFrequencyInMinutes = 60;
     const clockColor = "#5b5b5b";
-    const slideAspectRatio = 16 / 9; // Google Slides ratio
+    const slideAspectRatio = 16 / 9;
 
-    const presentationBaseUrl = "https://docs.google.com/presentation/d/e/2PACX-1vQwjH1aa643VnWNFaLkaOMQ_dgP2WpR4UvLJkZa3wIlueIrtIaOSXqd5Nj49o4r2uSmMWxkpH7EhJvd/embed";
+    // Ange endast presentations-ID här
+    const presentationId = "2PACX-1vQwjH1aa643VnWNFaLkaOMQ_dgP2WpR4UvLJkZa3wIlueIrtIaOSXqd5Nj49o4r2uSmMWxkpH7EhJvd";
+
+    const presentationBaseUrl = `https://docs.google.com/presentation/d/e/${presentationId}/embed`;
 
     const clock = document.getElementById("clock");
     const presentation = document.getElementById("presentation");
@@ -93,20 +96,17 @@
       let presentationWidth, presentationHeight, offsetX, offsetY;
 
       if (containerAspectRatio > slideAspectRatio) {
-        // Skärmen är bredare än presentationen → svart på sidorna
         presentationHeight = containerHeight;
         presentationWidth = containerHeight * slideAspectRatio;
         offsetX = (containerWidth - presentationWidth) / 2;
         offsetY = 0;
       } else {
-        // Skärmen är högre än presentationen → svart ovanför/under
         presentationWidth = containerWidth;
         presentationHeight = containerWidth / slideAspectRatio;
         offsetX = 0;
         offsetY = (containerHeight - presentationHeight) / 2;
       }
 
-      // Justering: placera klockan 2% in från höger och 2% ner från toppen av presentationsytan
       clock.style.left = `${offsetX + presentationWidth * 0.98}px`;
       clock.style.top = `${offsetY + presentationHeight * 0.02}px`;
       clock.style.transform = "translateX(-100%)";
