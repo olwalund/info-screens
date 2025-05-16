@@ -25,17 +25,16 @@
       width: 100%;
       height: 100%;
       border: none;
+      display: block;
     }
 
     #clock {
       position: absolute;
-      bottom: 2%;
-      width: 100%;
-      text-align: center;
-      font-size: 2.2vw;
+      font-size: 3vw;
+      color: white;
       background: transparent;
       white-space: nowrap;
-      color: white;
+      pointer-events: none;
     }
 
     #debug {
@@ -55,7 +54,7 @@
 <body>
   <div id="container">
     <iframe id="presentation" allowfullscreen></iframe>
-    <div id="clock">onsdag 14 maj 12:40</div>
+    <div id="clock">12:40</div>
     <div id="debug"></div>
   </div>
 
@@ -63,24 +62,19 @@
     // === KONFIGURATION ===
     const slideLengthInSeconds = 30;
     const updateFrequencyInMinutes = 60;
-    const clockColor = "#000000";
-    const presentationBaseUrl = "https://docs.google.com/presentation/d/e/2PACX-1vQwjH1aa643VnWNFaLkaOMQ_dgP2WpR4UvLJkZa3wIlueIrtIaOSXqd5Nj49o4r2uSmMWxkpH7EhJvd/embed";
+    const clockColor = "#5b5b5b";
+    const slideAspectRatio = 16 / 9; // Google Slides ratio
 
-    const weekdays = ["söndag", "måndag", "tisdag", "onsdag", "torsdag", "fredag", "lördag"];
-    const months = ["januari", "februari", "mars", "april", "maj", "juni", "juli", "augusti", "september", "oktober", "november", "december"];
+    const presentationBaseUrl = "https://docs.google.com/presentation/d/e/2PACX-1vQwjH1aa643VnWNFaLkaOMQ_dgP2WpR4UvLJkZa3wIlueIrtIaOSXqd5Nj49o4r2uSmMWxkpH7EhJvd/embed";
 
     const clock = document.getElementById("clock");
     const presentation = document.getElementById("presentation");
 
     function updateClock() {
       const now = new Date();
-      const weekday = weekdays[now.getDay()];
-      const day = now.getDate();
-      const month = months[now.getMonth()];
       const hours = now.getHours().toString().padStart(2, "0");
       const minutes = now.getMinutes().toString().padStart(2, "0");
-
-      clock.textContent = `${weekday} ${day} ${month} ${hours}:${minutes}`;
+      clock.textContent = `${hours}:${minutes}`;
       clock.style.color = clockColor;
     }
 
@@ -90,11 +84,41 @@
       presentation.src = `${presentationBaseUrl}?start=true&loop=true&delayms=${delayMs}&rm=minimal&${cacheBuster}`;
     }
 
-    // === INITIERING ===
+    function positionClock() {
+      const container = document.getElementById("container");
+      const containerWidth = container.offsetWidth;
+      const containerHeight = container.offsetHeight;
+      const containerAspectRatio = containerWidth / containerHeight;
+
+      let presentationWidth, presentationHeight, offsetX, offsetY;
+
+      if (containerAspectRatio > slideAspectRatio) {
+        // Skärmen är bredare än presentationen → svart på sidorna
+        presentationHeight = containerHeight;
+        presentationWidth = containerHeight * slideAspectRatio;
+        offsetX = (containerWidth - presentationWidth) / 2;
+        offsetY = 0;
+      } else {
+        // Skärmen är högre än presentationen → svart ovanför/under
+        presentationWidth = containerWidth;
+        presentationHeight = containerWidth / slideAspectRatio;
+        offsetX = 0;
+        offsetY = (containerHeight - presentationHeight) / 2;
+      }
+
+      // Justering: placera klockan 2% in från höger och 2% ner från toppen av presentationsytan
+      clock.style.left = `${offsetX + presentationWidth * 0.98}px`;
+      clock.style.top = `${offsetY + presentationHeight * 0.02}px`;
+      clock.style.transform = "translateX(-100%)";
+    }
+
+    // === INIT ===
     updateClock();
     setInterval(updateClock, 1000);
     loadPresentation();
     setInterval(loadPresentation, updateFrequencyInMinutes * 60000);
+    positionClock();
+    window.addEventListener("resize", positionClock);
   </script>
 </body>
 </html>
